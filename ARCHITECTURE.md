@@ -4,7 +4,7 @@
 If you want to familiarize yourself with the code base and *generally* how it works, this is a good place to be.
 
 ## High Level TLDR
-<DESCRIPTION>
+Currently everything is done in `main.go`
 
 ## Code Map
 
@@ -16,7 +16,7 @@ If you want to familiarize yourself with the code base and *generally* how it wo
 
 `<folder name>/<file name>` for a file within a folder
 
-### `<EXAMPLE>`
+### `main.go`
 
-example description
+The main function where everything gets started. 
 
