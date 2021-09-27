@@ -38,8 +38,18 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Buoy.yaml)")
+	pFlags := rootCmd.PersistentFlags()
+	pFlags.StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Buoy.yaml)")
 
+	pFlags.BoolP("quiet", "q", false, "Makes it run without log messages")
+
+	pFlags.StringP("log-mode", "l", "", "Log mode will output to different contexts like JSON, to the CLI, ETC")
+
+	pFlags.StringP("fleet", "f", "", "CIDR of network to join")
+
+	pFlags.StringP("interface", "i", "by1", "The internal network interface name")
+
+	pFlags.StringP("password", "p", "", "Encryption password for VPN")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
