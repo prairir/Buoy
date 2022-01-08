@@ -1,9 +1,13 @@
 package shanty
 
 import (
-	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+	"time"
+
+	"github.com/prairir/Buoy/pkg/config"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
 )
@@ -39,20 +43,22 @@ func init() {
 	// will be global for your application.
 
 	pFlags := rootCmd.PersistentFlags()
-	pFlags.StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Buoy.yaml)")
+	pFlags.StringVar(&cfgFile, "config", "", "config file (default is /etc/buoy/buoy.yaml)")
 
-	pFlags.BoolP("quiet", "q", false, "Makes it run without log messages")
+	pFlags.BoolP("debug", "d", false, "debug mode")
+	viper.BindPFlag("debug", pFlags.Lookup("debug"))
 
-	pFlags.StringP("log-mode", "l", "", "Log mode will output to different contexts like JSON, to the CLI, ETC")
+	pFlags.BoolP("log-cli", "l", true, "log output to cli or /var/log/buoy.log")
+	viper.BindPFlag("log-cli", pFlags.Lookup("log-cli"))
 
 	pFlags.StringP("fleet", "f", "", "CIDR of network to join")
+	viper.BindPFlag("fleet", pFlags.Lookup("fleet"))
 
 	pFlags.StringP("interface", "i", "by1", "The internal network interface name")
+	viper.BindPFlag("interface", pFlags.Lookup("interface"))
 
 	pFlags.StringP("password", "p", "", "Encryption password for VPN")
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	viper.BindPFlag("password", pFlags.Lookup("password"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -61,24 +67,62 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".Buoy" (without extension).
-		viper.AddConfigPath(home)
+		// search config in defualt directory(/etc/buoy)
+		// with name `buoy.yaml`
+		viper.AddConfigPath("/etc/buoy/")
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".Buoy")
+		viper.SetConfigName("buoy")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	// set time stamp to unix epoch in ms
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatal().
+			Err(err).
+			Msg("Couldn't read in config")
+
+	}
+
+	log.Debug().Msgf("Using config file: %s", viper.ConfigFileUsed())
+
+	// unmarshal viper to config.InitConfig
+	err = config.UnmarshalInitConfig()
+	if err != nil {
+		log.Fatal().
+			Err(err).
+			Msg("Couldn't unmarshal config")
+	}
+
+	// set to info level first
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+
+	// if debug true then set to debug level
+	if config.InitConfig.Debug {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
+	// if LogCli true then log to stderr with pretty formatting
+	if config.InitConfig.LogCli {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC1123Z})
+	} else {
+		// this is thread safe because the underlying file write sys
+		// calls are blocking and so they are thread safe
+		f, err := os.OpenFile("/var/log/buoy.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatal().
+				Err(err).
+				Msg("Couldn't open file /var/log/buoy.log")
+		}
+
+		log.Logger = log.Output(f)
 	}
 }
 
 func Root(cmd *cobra.Command, args []string) {
-	fmt.Println("hi")
+	log.Info().Msg("HI")
 }
