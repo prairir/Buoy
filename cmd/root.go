@@ -1,10 +1,12 @@
 package shanty
 
 import (
+	"net"
 	"os"
 	"time"
 
 	"github.com/prairir/Buoy/pkg/config"
+	"github.com/prairir/Buoy/pkg/tun"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -98,6 +100,13 @@ func initConfig() {
 			Msg("Couldn't unmarshal config")
 	}
 
+	config.InitConfig.FleetAddr, config.InitConfig.FleetNet, err = net.ParseCIDR(config.InitConfig.FleetStr)
+	if err != nil {
+		log.Fatal().
+			Err(err).
+			Msg("Couldn't parse CIDR")
+	}
+
 	// set to info level first
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
@@ -124,5 +133,9 @@ func initConfig() {
 }
 
 func Root(cmd *cobra.Command, args []string) {
-	log.Info().Msg("HI")
+	log.Info().Msg("bye")
+
+	log.Info().Str("ip", config.InitConfig.FleetAddr.String()).Str("net", config.InitConfig.FleetNet.String()).Send()
+	tun.Init(config.InitConfig.IName,
+		config.InitConfig.FleetAddr, config.InitConfig.FleetNet)
 }

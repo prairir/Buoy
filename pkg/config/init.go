@@ -4,27 +4,24 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 )
 
 type initConfig struct {
-	Fleet    *net.IPNet `mapstructure:"fleet"`
-	Password string     `mapstructure:"password"`
-	IName    string     `mapstructure:"interface"`
-	Debug    bool       `mapstructure:"debug"`
-	LogCli   bool       `mapstructure:"log-cli"`
+	Debug     bool   `mapstructure:"debug"`
+	LogCli    bool   `mapstructure:"log-cli"`
+	FleetStr  string `mapstructure:"fleet"`
+	Password  string `mapstructure:"password"`
+	IName     string `mapstructure:"interface"`
+	FleetAddr net.IP
+	FleetNet  *net.IPNet
 }
 
 var InitConfig initConfig
 
 // config.UnmarshalInitConfig: unmarshal viper to config.InitConfig global instance of config.initConfig
 func UnmarshalInitConfig() error {
-	err := viper.Unmarshal(&InitConfig, func(m *mapstructure.DecoderConfig) {
-		m.DecodeHook = mapstructure.ComposeDecodeHookFunc(
-			mapstructure.StringToIPNetHookFunc(),
-		)
-	})
+	err := viper.Unmarshal(&InitConfig)
 	if err != nil {
 		return fmt.Errorf("Config Error: %w", err)
 	}
