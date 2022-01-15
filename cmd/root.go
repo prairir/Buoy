@@ -133,9 +133,10 @@ func initConfig() {
 }
 
 func Root(cmd *cobra.Command, args []string) {
-	log.Info().Msg("bye")
-
-	log.Info().Str("ip", config.InitConfig.FleetAddr.String()).Str("net", config.InitConfig.FleetNet.String()).Send()
-	tun.Init(config.InitConfig.IName,
+	_, err := tun.New(config.InitConfig.IName,
 		config.InitConfig.FleetAddr, config.InitConfig.FleetNet)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Tun Creation Error")
+	}
+
 }
