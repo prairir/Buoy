@@ -14,6 +14,8 @@ You can use `--config` to specify a configuration file. If you do not specify a 
 
 All the configuration options can be specified with flags. You still need to point to a configuration file even if you specify with only flags.
 
+We provide an example configuration called `buoy.example.yaml`
+
 ## Logging
 
 By default, it logs to `/var/log/buoy.log`. It uses structured logging so it may be a bit unreadable.
@@ -21,6 +23,16 @@ By default, it logs to `/var/log/buoy.log`. It uses structured logging so it may
 To have nicer CLI output, use the `--log-cli` or `-l` flags
 
 Both of these logging solutions are thread safe so you will drop any logs
+
+## Building
+
+To build, run
+
+```sh
+earthly +build
+```
+
+This will create a binary called `buoy`
 
 ## Run
 
