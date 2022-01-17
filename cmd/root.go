@@ -50,7 +50,7 @@ func init() {
 	pFlags.BoolP("debug", "d", false, "debug mode")
 	viper.BindPFlag("debug", pFlags.Lookup("debug"))
 
-	pFlags.BoolP("log-cli", "l", true, "log output to cli or /var/log/buoy.log")
+	pFlags.BoolP("log-cli", "l", false, "log output to cli or /var/log/buoy.log")
 	viper.BindPFlag("log-cli", pFlags.Lookup("log-cli"))
 
 	pFlags.StringP("fleet", "f", "", "CIDR of network to join")
@@ -133,6 +133,7 @@ func initConfig() {
 }
 
 func Root(cmd *cobra.Command, args []string) {
+	log.Info().Msg("HI")
 	_, err := tun.New(config.InitConfig.IName,
 		config.InitConfig.FleetAddr, config.InitConfig.FleetNet)
 	if err != nil {

@@ -6,17 +6,40 @@
 
 We are using [water](https://github.com/songgao/water) because its really good.
 
-## Setup
+## Configuration
 
-Run this to run
-``` go
-sudo go run main.go
+Buoy uses YAML as the configuration langauge.
+
+You can use `--config` to specify a configuration file. If you do not specify a location, it will look for `/etc/buoy/buoy.yaml`
+
+All the configuration options can be specified with flags. You still need to point to a configuration file even if you specify with only flags.
+
+## Logging
+
+By default, it logs to `/var/log/buoy.log`. It uses structured logging so it may be a bit unreadable.
+
+To have nicer CLI output, use the `--log-cli` or `-l` flags
+
+Both of these logging solutions are thread safe so you will drop any logs
+
+## Run
+
+Run with sudo permissions. It needs to create and manage network interfaces to run.
+
+```sh
+sudo ./buoy
 ```
 
-You **HAVE** to do this currently. We are working on a programatic way of bringing the interface up.
-``` sh
-sudo ip addr add <local ip range not in use> dev by1
-sudo ip link set dev by1 up
+run with printing
+
+```sh
+sudo ./buoy --log-cli
+```
+
+run with specified config
+
+```sh
+sudo ./buoy --config="buoy.yaml"
 ```
 
 ## Terminology
@@ -24,12 +47,15 @@ sudo ip link set dev by1 up
 Buoy has a cool sea theme so we are gonna stick to it.
 
 **NOTE: This will be in the format of `<what we call it> - <term name>**
-* fleet - network
-* sonar - distrubted peer discovery protocol
-* shanty - cmd
+
+- fleet - network
+- sonar - distrubted peer discovery protocol
+- shanty - cmd
 
 ## Contributing
+
 You can read all about contributing to this project in `CONTRIBUTING.md`
 
 ## Architecture
+
 You can read about it in `ARCHITECTURE.md`
