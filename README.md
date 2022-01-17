@@ -42,6 +42,18 @@ run with specified config
 sudo ./buoy --config="buoy.yaml"
 ```
 
+## Testing
+
+We run all our tests inside earthly. This creates reproducible tests which are system agnostic.
+
+To run all tests, run
+
+```sh
+earthly --allow-privileged +test
+```
+
+We need privileged container because some tests require it. Like the test `TestTunNew` requires a privileged container.
+
 ## Terminology
 
 Buoy has a cool sea theme so we are gonna stick to it.
