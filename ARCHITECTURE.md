@@ -4,7 +4,7 @@
 If you want to familiarize yourself with the code base and *generally* how it works, this is a good place to be.
 
 ## High Level TLDR
-Currently everything is done in `main.go`
+`main.go` loads `cmd/root.go` which runs the function `Root`. `Root` starts all the magic.
 
 ## Code Map
 
@@ -18,5 +18,12 @@ Currently everything is done in `main.go`
 
 ### `main.go`
 
-The main function where everything gets started. 
+Main function where everything gets started. 
 
+### `cmd/`
+
+Command line interface package where command line interface parsing stuff lives. We call this package `shanty` like sea shanty.
+
+### `cmd/root.go`
+
+Root command file which gets instantiated by `main.go`
