@@ -70,7 +70,7 @@ We need privileged container because some tests require it. Like the test `TestT
 
 Buoy has a cool sea theme so we are gonna stick to it.
 
-**NOTE: This will be in the format of `<what we call it> - <term name>**
+**NOTE: This will be in the format of `<what we call it> - <term name>`**
 
 - fleet - network
 - sonar - distrubted peer discovery protocol
