@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-type initConfig struct {
+type config struct {
 	Debug     bool   `mapstructure:"debug"`
 	LogCli    bool   `mapstructure:"log-cli"`
 	FleetStr  string `mapstructure:"fleet"`
@@ -17,11 +17,11 @@ type initConfig struct {
 	FleetNet  *net.IPNet
 }
 
-var InitConfig initConfig
+var Config config
 
 // config.UnmarshalInitConfig: unmarshal viper to config.InitConfig global instance of config.initConfig
-func UnmarshalInitConfig() error {
-	err := viper.Unmarshal(&InitConfig)
+func UnmarshalConfig() error {
+	err := viper.Unmarshal(&Config)
 	if err != nil {
 		return fmt.Errorf("Config Error: %w", err)
 	}

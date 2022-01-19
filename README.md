@@ -2,7 +2,7 @@
 
 **WARNING: these instructions work best on a unix based system**
 
-(Logo Pending)
+![logo](./logo.png)
 
 We are using [water](https://github.com/songgao/water) because its really good.
 

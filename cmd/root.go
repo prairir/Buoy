@@ -90,17 +90,15 @@ func initConfig() {
 
 	}
 
-	log.Debug().Msgf("Using config file: %s", viper.ConfigFileUsed())
-
 	// unmarshal viper to config.InitConfig
-	err = config.UnmarshalInitConfig()
+	err = config.UnmarshalConfig()
 	if err != nil {
 		log.Fatal().
 			Err(err).
 			Msg("Couldn't unmarshal config")
 	}
 
-	config.InitConfig.FleetAddr, config.InitConfig.FleetNet, err = net.ParseCIDR(config.InitConfig.FleetStr)
+	config.Config.FleetAddr, config.Config.FleetNet, err = net.ParseCIDR(config.Config.FleetStr)
 	if err != nil {
 		log.Fatal().
 			Err(err).
@@ -111,12 +109,12 @@ func initConfig() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	// if debug true then set to debug level
-	if config.InitConfig.Debug {
+	if config.Config.Debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 
 	// if LogCli true then log to stderr with pretty formatting
-	if config.InitConfig.LogCli {
+	if config.Config.LogCli {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC1123Z})
 	} else {
 		// this is thread safe because the underlying file write sys
@@ -130,12 +128,22 @@ func initConfig() {
 
 		log.Logger = log.Output(f)
 	}
+
+	log.Debug().Msgf("Using config file: %s", viper.ConfigFileUsed())
+
+	log.Debug().
+		Bool("Debug", config.Config.Debug).
+		Bool("Log-Cli", config.Config.LogCli).
+		Str("Iname", config.Config.IName).
+		Str("Password", config.Config.Password).
+		Str("Fleet Network", config.Config.FleetNet.String()).
+		Str("Fleet Address", config.Config.FleetAddr.String()).
+		Msg("Config")
 }
 
 func Root(cmd *cobra.Command, args []string) {
-	log.Info().Msg("HI")
-	_, err := tun.New(config.InitConfig.IName,
-		config.InitConfig.FleetAddr, config.InitConfig.FleetNet)
+	_, err := tun.New(config.Config.IName,
+		config.Config.FleetAddr, config.Config.FleetNet)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Tun Creation Error")
 	}
