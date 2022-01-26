@@ -21,7 +21,7 @@ enableMissingTranslationPlaceholders = false
 
     # Documentation repository section
     # documentation repository (set edit link to documentation repository)
-    github_doc_repository = "https://github.com/prairir/Buoy_Docs"
+    github_doc_repository = "https://github.com/prairir/Buoy"
     github_doc_repository_path = ""
 
     # Analytic section
