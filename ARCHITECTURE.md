@@ -1,4 +1,9 @@
-# Architecture
+---
+title: "Architecture"
+date: 2022-01-20T10:57:50-05:00
+draft: true 
+weight: 1
+---
 **This document describes the high-level architecture of this project**
 
 If you want to familiarize yourself with the code base and *generally* how it works, this is a good place to be.

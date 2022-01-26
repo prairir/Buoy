@@ -1,4 +1,9 @@
-# Contributing
+---
+title: "Contributing"
+date: 2022-01-20T10:57:45-05:00
+draft: false 
+weight: 2
+---
 
 ## Fork and Pull Request Proccess
 
