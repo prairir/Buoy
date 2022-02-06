@@ -7,10 +7,10 @@ import (
 
 	"github.com/prairir/Buoy/pkg/config"
 	"github.com/prairir/Buoy/pkg/tun"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-
 	"github.com/spf13/viper"
 )
 
@@ -61,6 +61,9 @@ func init() {
 
 	pFlags.StringP("password", "p", "", "Encryption password for VPN")
 	viper.BindPFlag("password", pFlags.Lookup("password"))
+
+	pFlags.String("listen-port", "31337", "Port to listen on")
+	viper.BindPFlag("listen-port", pFlags.Lookup("listen-port"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -136,6 +139,7 @@ func initConfig() {
 		Bool("Log-Cli", config.Config.LogCli).
 		Str("Iname", config.Config.IName).
 		Str("Password", config.Config.Password).
+		Str("Listen-Port", config.Config.ListenPort).
 		Str("Fleet Network", config.Config.FleetNet.String()).
 		Str("Fleet Address", config.Config.FleetAddr.String()).
 		Msg("Config")
@@ -147,5 +151,4 @@ func Root(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Tun Creation Error")
 	}
-
 }
