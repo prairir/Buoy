@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/prairir/Buoy/pkg/config"
+	"github.com/prairir/Buoy/pkg/ethrouter"
 	"github.com/prairir/Buoy/pkg/tun"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -150,5 +152,18 @@ func Root(cmd *cobra.Command, args []string) {
 		config.Config.FleetAddr, config.Config.FleetNet)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Tun Creation Error")
+	}
+
+	eg := new(errgroup.Group)
+
+	ingressQ := make(chan []byte, 1)
+	egressQ := make(chan ethrouter.Packet, 1)
+
+	eg.Go(func() error {
+		return ethrouter.Run(eg, egressQ, ingressQ)
+	})
+
+	if err = eg.Wait(); err != nil {
+		log.Fatal().Err(err).Msg("Buoy Run Failed")
 	}
 }
