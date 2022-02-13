@@ -2,7 +2,7 @@
 
 **WARNING: these instructions work best on a unix based system**
 
-![logo](./logo.png)
+![logo](./logo-med.png)
 
 We are using [water](https://github.com/songgao/water) because its really good.
 
