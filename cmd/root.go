@@ -8,6 +8,7 @@ import (
 	"github.com/prairir/Buoy/pkg/config"
 	"github.com/prairir/Buoy/pkg/ethrouter"
 	"github.com/prairir/Buoy/pkg/tun"
+	"github.com/prairir/Buoy/pkg/tunrouter"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/rs/zerolog"
@@ -148,7 +149,8 @@ func initConfig() {
 }
 
 func Root(cmd *cobra.Command, args []string) {
-	_, err := tun.New(config.Config.IName,
+	// TODO look into creating interface in tunrouter
+	inf, err := tun.New(config.Config.IName,
 		config.Config.FleetAddr, config.Config.FleetNet)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Tun Creation Error")
@@ -161,6 +163,10 @@ func Root(cmd *cobra.Command, args []string) {
 
 	eg.Go(func() error {
 		return ethrouter.Run(eg, egressQ, ingressQ)
+	})
+
+	eg.Go(func() error {
+		return tunrouter.Run(eg, inf, egressQ, ingressQ) //TODO verify order of egress and ingress
 	})
 
 	if err = eg.Wait(); err != nil {
