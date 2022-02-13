@@ -21,9 +21,10 @@ func reader(conn *net.UDPConn, readq chan []byte) error {
 				return nil
 			}
 
-			return fmt.Errorf("tunrouter.reader: %w", err)
+			return fmt.Errorf("ethrouter.reader: %w", err)
 		}
 
+		// TODO possible race condition here. cop can exist in 2 go routines at the same time, the first ones memory gets overwriten when the second one gets dispatched
 		cop := make([]byte, n)
 		copy(cop, buf[:n])
 

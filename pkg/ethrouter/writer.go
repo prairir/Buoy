@@ -22,6 +22,7 @@ func writer(conn *net.UDPConn, writeq chan Packet) error {
 		_, err := conn.WriteTo(pack.Payload, pack.Addr)
 		if err != nil {
 			// if connection is closed, exit nicely
+			// TODO verify that is the best way to close the writer
 			if errors.Is(err, net.ErrClosed) {
 				return nil
 			}
