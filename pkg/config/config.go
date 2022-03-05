@@ -8,14 +8,15 @@ import (
 )
 
 type config struct {
-	Debug      bool   `mapstructure:"debug"`
-	LogCli     bool   `mapstructure:"log-cli"`
-	FleetStr   string `mapstructure:"fleet"`
-	Password   string `mapstructure:"password"`
-	IName      string `mapstructure:"interface"`
-	ListenPort string `mapstructure:"listen-port"`
-	FleetAddr  net.IP
-	FleetNet   *net.IPNet
+	Debug       bool   `mapstructure:"debug"`
+	LogCli      bool   `mapstructure:"log-cli"`
+	FleetStr    string `mapstructure:"fleet"`
+	PasswordStr string `mapstructure:"password"`
+	IName       string `mapstructure:"interface"`
+	ListenPort  string `mapstructure:"listen-port"`
+	Password    []byte
+	FleetAddr   net.IP
+	FleetNet    *net.IPNet
 }
 
 var Config config

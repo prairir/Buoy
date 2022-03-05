@@ -111,6 +111,8 @@ func initConfig() {
 			Msg("Couldn't parse CIDR")
 	}
 
+	config.Config.Password = []byte(config.Config.Password)
+
 	// set to info level first
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
