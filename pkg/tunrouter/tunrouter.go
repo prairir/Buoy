@@ -7,12 +7,12 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func Run(eg *errgroup.Group, inf *water.Interface, readq chan ethrouter.Packet, writeq chan []byte) error {
+func Run(eg *errgroup.Group, inf *water.Interface, tun2EthQ chan ethrouter.Packet, eth2TunQ chan []byte) error {
 	eg.Go(func() error {
-		return writer(inf, writeq)
+		return writer(inf, eth2TunQ)
 	})
 
 	eg.Go(func() error {
-		return reader(inf, readq)
+		return reader(inf, tun2EthQ)
 	})
 }

@@ -10,7 +10,7 @@ const (
 	maxUDPPacketSize = 65507
 )
 
-func reader(conn *net.UDPConn, readq chan []byte) error {
+func reader(conn *net.UDPConn, eth2TunQ chan []byte) error {
 
 	buf := make([]byte, maxUDPPacketSize)
 	for {
@@ -24,13 +24,11 @@ func reader(conn *net.UDPConn, readq chan []byte) error {
 			return fmt.Errorf("ethrouter.reader: %w", err)
 		}
 
-		// TODO possible race condition here. cop can exist in 2 go routines at the same time, the first ones memory gets overwriten when the second one gets dispatched
-		cop := make([]byte, n)
-		copy(cop, buf[:n])
-
-		go func(lBuf []byte) {
+		go func(buf []byte) {
 			//TODO put translation here
-			readq <- lBuf
-		}(cop)
+			cop := make([]byte, n)
+			copy(cop, buf[:n])
+			eth2TunQ <- cop
+		}(buf)
 	}
 }

@@ -6,9 +6,9 @@ import (
 	"github.com/songgao/water"
 )
 
-func writer(inf *water.Interface, writeq chan []byte) error {
+func writer(inf *water.Interface, eth2TunQ chan []byte) error {
 	for {
-		pack := <-writeq
+		pack := <-eth2TunQ
 		_, err := inf.Write(pack) // possible block, look into dispatching writes to goroutines
 		if err != nil {
 			//TODO verify or add extra error handling

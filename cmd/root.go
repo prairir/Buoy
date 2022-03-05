@@ -158,15 +158,15 @@ func Root(cmd *cobra.Command, args []string) {
 
 	eg := new(errgroup.Group)
 
-	ingressQ := make(chan []byte, 1)
-	egressQ := make(chan ethrouter.Packet, 1)
+	eth2TunQ := make(chan []byte, 1)
+	tun2EthQ := make(chan ethrouter.Packet, 1)
 
 	eg.Go(func() error {
-		return ethrouter.Run(eg, egressQ, ingressQ)
+		return ethrouter.Run(eg, tun2EthQ, eth2TunQ)
 	})
 
 	eg.Go(func() error {
-		return tunrouter.Run(eg, inf, egressQ, ingressQ) //TODO verify order of egress and ingress
+		return tunrouter.Run(eg, inf, tun2EthQ, eth2TunQ) //TODO verify order of egress and ingress
 	})
 
 	if err = eg.Wait(); err != nil {

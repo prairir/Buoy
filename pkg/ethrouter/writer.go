@@ -15,10 +15,10 @@ type Packet struct {
 	Payload []byte
 }
 
-// tunrouter.writer: Reads from the writeq channel and writes to a UDP connection
-func writer(conn *net.UDPConn, writeq chan Packet) error {
+// tunrouter.writer: Reads from the readq channel and writes to a UDP connection
+func writer(conn *net.UDPConn, tun2EthQ chan Packet) error {
 	for {
-		pack := <-writeq
+		pack := <-tun2EthQ
 		_, err := conn.WriteTo(pack.Payload, pack.Addr)
 		if err != nil {
 			// if connection is closed, exit nicely
