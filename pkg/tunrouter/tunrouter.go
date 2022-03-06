@@ -15,4 +15,6 @@ func Run(eg *errgroup.Group, inf *water.Interface, tun2EthQ chan ethrouter.Packe
 	eg.Go(func() error {
 		return reader(inf, tun2EthQ)
 	})
+
+	return nil
 }
