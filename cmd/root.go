@@ -63,7 +63,7 @@ func init() {
 	viper.BindPFlag("interface", pFlags.Lookup("interface"))
 
 	pFlags.StringP("password", "p", "", "Encryption password for VPN")
-	viper.BindPFlag("password", pFlags.Lookup("password"))
+	viper.BindPFlag("passwordStr", pFlags.Lookup("password"))
 
 	pFlags.String("listen-port", "31337", "Port to listen on")
 	viper.BindPFlag("listen-port", pFlags.Lookup("listen-port"))
@@ -143,7 +143,7 @@ func initConfig() {
 		Bool("Debug", config.Config.Debug).
 		Bool("Log-Cli", config.Config.LogCli).
 		Str("Iname", config.Config.IName).
-		Str("Password", config.Config.Password).
+		Str("Password", config.Config.PasswordStr).
 		Str("Listen-Port", config.Config.ListenPort).
 		Str("Fleet Network", config.Config.FleetNet.String()).
 		Str("Fleet Address", config.Config.FleetAddr.String()).

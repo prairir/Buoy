@@ -2,18 +2,16 @@ package translate
 
 import (
 	"fmt"
-
-	"github.com/prairir/Buoy/pkg/config"
 )
 
 // translate.Translate: compresses and encrypts plainText
-func Translate(plainText []byte) ([]byte, error) {
+func Translate(plainText, password []byte) ([]byte, error) {
 	compressed, err := compress(plainText)
 	if err != nil {
 		return []byte{}, fmt.Errorf("translate.Translate: %w", err)
 	}
 
-	encrypted, err := encrypt(compressed, config.Config.Password)
+	encrypted, err := encrypt(compressed, password)
 	if err != nil {
 		return []byte{}, fmt.Errorf("translate.Translate: %w", err)
 	}
@@ -22,8 +20,8 @@ func Translate(plainText []byte) ([]byte, error) {
 }
 
 // translate.Untranslate: decrypts and decompresses already "translated" cipherText.
-func Untranslate(cipherText []byte) ([]byte, error) {
-	decrypted, err := decrypt(cipherText, config.Config.Password)
+func Untranslate(cipherText, password []byte) ([]byte, error) {
+	decrypted, err := decrypt(cipherText, password)
 	if err != nil {
 		return []byte{}, fmt.Errorf("translate.Untranslate: %w", err)
 	}
