@@ -4,10 +4,21 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
 
+	"github.com/prairir/Buoy/pkg/config"
 	"github.com/prairir/Buoy/pkg/ethrouter"
+	"github.com/prairir/Buoy/pkg/translate"
+	"github.com/rs/zerolog/log"
 	"github.com/songgao/water"
 )
+
+var FleetList map[string]net.UDPAddr = map[string]net.UDPAddr{
+	"192.168.18.2": {
+		IP:   net.IP("127.0.0.1"),
+		Port: 8080,
+	},
+}
 
 const (
 	maxIPPacketSize = 65535
@@ -18,8 +29,7 @@ func reader(inf *water.Interface, tun2EthQ chan ethrouter.Packet) error {
 	for {
 		n, err := inf.Read(buf)
 		if err != nil {
-			// if connection is closed, exit nicely
-			// TODO fix that error, its useless(stupid copy paste)
+			// TODO fix that error, its useless(stupid copy paste). Change it to be the same behavior(interface close)
 			if errors.Is(err, net.ErrClosed) {
 				return nil
 			}
@@ -31,12 +41,34 @@ func reader(inf *water.Interface, tun2EthQ chan ethrouter.Packet) error {
 			cop := make([]byte, n)
 			copy(cop, buf[:n])
 
-			//TODO put translation here
-			saddr := fmt.Sprintf("%d.%d.%d.%d", buf[16], buf[17], buf[18], buf[19])
-			addr, _ := net.ResolveIPAddr("udp", saddr) // TODO think of a way to propegate errors nicely without a wait group
+			// get the version xxxx0000 is the version in the first byte
+			version := cop[0] >> 4
+			if int(version) != 4 {
+				return // exit if not ipv4
+			}
+
+			packPayload, err := translate.Translate(cop, config.Config.Password)
+			// TODO: verify this behavior
+			if err != nil { // if error, drop packet
+				log.Error().Err(err).Msg("tunrouter.Reader: couldnt translate package: Packet dropped")
+				return
+			}
+
+			// Fastest way to convert bytes to IP
+			// I benchmarked this, sprintf, and my own way using strconv, int casting, and string concatination.
+			// This is fastest(16 ns/op), then mine(48 ns/op), then sprintf(119 ns/op)
+			srcAddr := net.IP(cop[16:20])
+
+			destAddr, ok := FleetList[srcAddr.String()]
+			// TODO: verify this behavior
+			if !ok {
+				log.Error().Msg("tunrouter.Reader: couldnt find matching udp addr in fleetlist: Packet dropped")
+				return
+			}
+
 			pack := ethrouter.Packet{
-				Addr:    addr, // TODO use translation addr
-				Payload: cop,  // TODO use translation payload(encrypted + compressed)
+				Addr:    &destAddr,
+				Payload: packPayload,
 			}
 			tun2EthQ <- pack
 		}(buf)
