@@ -7,6 +7,7 @@ import (
 )
 
 func writer(inf *water.Interface, eth2TunQ chan []byte) error {
+	// TODO: change for to for range
 	for {
 		pack := <-eth2TunQ
 		_, err := inf.Write(pack) // possible block, look into dispatching writes to goroutines

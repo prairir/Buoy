@@ -4,6 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"net"
+
+	"github.com/prairir/Buoy/pkg/config"
+	"github.com/prairir/Buoy/pkg/translate"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -24,11 +28,18 @@ func reader(conn *net.UDPConn, eth2TunQ chan []byte) error {
 			return fmt.Errorf("ethrouter.reader: %w", err)
 		}
 
-		go func(buf []byte) {
-			//TODO put translation here
-			cop := make([]byte, n)
-			copy(cop, buf[:n])
-			eth2TunQ <- cop
-		}(buf)
+		go func(buf []byte, n int) {
+			pack := make([]byte, n)
+			copy(pack, buf[:n])
+
+			pack, err = translate.Untranslate(pack, config.Config.Password)
+			// TODO: verify this behavior
+			if err != nil { // if error, drop packet
+				log.Error().Err(err).Msg("Packet dropped")
+				return
+			}
+
+			eth2TunQ <- pack
+		}(buf, n)
 	}
 }
