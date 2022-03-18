@@ -6,11 +6,14 @@ import (
 	"time"
 
 	"github.com/prairir/Buoy/pkg/config"
+	"github.com/prairir/Buoy/pkg/ethrouter"
 	"github.com/prairir/Buoy/pkg/tun"
+	"github.com/prairir/Buoy/pkg/tunrouter"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-
 	"github.com/spf13/viper"
 )
 
@@ -60,7 +63,10 @@ func init() {
 	viper.BindPFlag("interface", pFlags.Lookup("interface"))
 
 	pFlags.StringP("password", "p", "", "Encryption password for VPN")
-	viper.BindPFlag("password", pFlags.Lookup("password"))
+	viper.BindPFlag("passwordStr", pFlags.Lookup("password"))
+
+	pFlags.String("listen-port", "31337", "Port to listen on")
+	viper.BindPFlag("listen-port", pFlags.Lookup("listen-port"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -105,6 +111,8 @@ func initConfig() {
 			Msg("Couldn't parse CIDR")
 	}
 
+	config.Config.Password = []byte(config.Config.Password)
+
 	// set to info level first
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
@@ -135,17 +143,35 @@ func initConfig() {
 		Bool("Debug", config.Config.Debug).
 		Bool("Log-Cli", config.Config.LogCli).
 		Str("Iname", config.Config.IName).
-		Str("Password", config.Config.Password).
+		Str("Password", config.Config.PasswordStr).
+		Str("Listen-Port", config.Config.ListenPort).
 		Str("Fleet Network", config.Config.FleetNet.String()).
 		Str("Fleet Address", config.Config.FleetAddr.String()).
 		Msg("Config")
 }
 
 func Root(cmd *cobra.Command, args []string) {
-	_, err := tun.New(config.Config.IName,
+	// TODO look into creating interface in tunrouter
+	inf, err := tun.New(config.Config.IName,
 		config.Config.FleetAddr, config.Config.FleetNet)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Tun Creation Error")
 	}
 
+	eg := new(errgroup.Group)
+
+	eth2TunQ := make(chan []byte, 1)
+	tun2EthQ := make(chan ethrouter.Packet, 1)
+
+	eg.Go(func() error {
+		return ethrouter.Run(eg, tun2EthQ, eth2TunQ)
+	})
+
+	eg.Go(func() error {
+		return tunrouter.Run(eg, inf, tun2EthQ, eth2TunQ) //TODO verify order of egress and ingress
+	})
+
+	if err = eg.Wait(); err != nil {
+		log.Fatal().Err(err).Msg("Buoy Run Failed")
+	}
 }

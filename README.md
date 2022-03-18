@@ -2,7 +2,10 @@
 
 **WARNING: these instructions work best on a unix based system**
 
-![logo](./logo-med.png)
+<div style="text-align: center;">
+    ![logo](./logo.png "buoy logo")
+</div>
+
 
 We are using [water](https://github.com/songgao/water) because its really good.
 
