@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strconv"
 
 	"github.com/prairir/Buoy/pkg/config"
 	"github.com/prairir/Buoy/pkg/ethrouter"
@@ -14,10 +13,12 @@ import (
 )
 
 var FleetList map[string]net.UDPAddr = map[string]net.UDPAddr{
-	"192.168.18.2": {
-		IP:   net.IP("127.0.0.1"),
-		Port: 8080,
-	},
+	/*
+		"192.168.18.2": {
+			IP:   net.IP("192.168.2.58"),
+			Port: 8080,
+		},
+	*/
 }
 
 const (
@@ -25,6 +26,8 @@ const (
 )
 
 func reader(inf *water.Interface, tun2EthQ chan ethrouter.Packet) error {
+	addr, _ := net.ResolveUDPAddr("udp", "192.168.2.58:8080")
+	FleetList["192.168.18.2"] = *addr
 	buf := make([]byte, maxIPPacketSize)
 	for {
 		n, err := inf.Read(buf)
@@ -37,7 +40,7 @@ func reader(inf *water.Interface, tun2EthQ chan ethrouter.Packet) error {
 			return fmt.Errorf("tunrouter.reader: %w", err)
 		}
 
-		go func(buf []byte) {
+		go func(buf []byte, n int) {
 			cop := make([]byte, n)
 			copy(cop, buf[:n])
 
@@ -62,7 +65,7 @@ func reader(inf *water.Interface, tun2EthQ chan ethrouter.Packet) error {
 			destAddr, ok := FleetList[srcAddr.String()]
 			// TODO: verify this behavior
 			if !ok {
-				log.Error().Msg("tunrouter.Reader: couldnt find matching udp addr in fleetlist: Packet dropped")
+				log.Error().Str("addr", srcAddr.String()).Msg("tunrouter.Reader: couldnt find matching udp addr in fleetlist: Packet dropped")
 				return
 			}
 
@@ -71,7 +74,7 @@ func reader(inf *water.Interface, tun2EthQ chan ethrouter.Packet) error {
 				Payload: packPayload,
 			}
 			tun2EthQ <- pack
-		}(buf)
+		}(buf, n)
 
 	}
 }
