@@ -93,7 +93,6 @@ func initConfig() {
 		log.Fatal().
 			Err(err).
 			Msg("Couldn't read in config")
-
 	}
 
 	// unmarshal viper to config.InitConfig
@@ -111,7 +110,7 @@ func initConfig() {
 			Msg("Couldn't parse CIDR")
 	}
 
-	config.Config.Password = []byte(config.Config.Password)
+	config.Config.Password = []byte(config.Config.PasswordStr)
 
 	// set to info level first
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
