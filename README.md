@@ -1,13 +1,10 @@
 # Buoy
 
+<p align="center">
+        <img src="./logo-med.png"/>
+</p>
+
 **WARNING: these instructions work best on a unix based system**
-
-<div style="text-align: center;">
-    ![logo](./logo.png "buoy logo")
-</div>
-
-
-We are using [water](https://github.com/songgao/water) because its really good.
 
 ## Configuration
 
