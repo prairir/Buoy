@@ -8,9 +8,24 @@
 */
 package lighthouse
 
-import "net"
+import (
+	"encoding/json"
+	"fmt"
+	"net"
+)
 
 // a boat is a client to a lighthouse
 type Boat struct {
 	conn *net.UDPConn
+}
+
+func (b *Boat) Ping() {
+	query := map[string]string{"q": "ping"}
+	data, err := json.Marshal(query)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Fprint(b.conn, data)
 }

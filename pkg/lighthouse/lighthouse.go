@@ -30,16 +30,13 @@ func (l *Lighthouse) Start() {
 		if err != nil {
 			panic(err)
 		}
-
-		resp := map[string]string{
-			"r": "ping",
+		if query["q"] == "ping" {
+			resp := map[string]string{
+				"r": "ping",
+			}
+			respData, _ := json.Marshal(resp)
+			n, err = l.conn.WriteTo(respData, addr)
+			fmt.Printf("packet sent: bytes=%d from=%s\n", n, addr.String())
 		}
-		respData, _ := json.Marshal(resp)
-		n, err = l.conn.WriteTo(respData, addr)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("packet-written: bytes=%d to=%s\n", n, addr.String())
 	}
 }
