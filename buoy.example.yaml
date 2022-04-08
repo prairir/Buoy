@@ -3,3 +3,8 @@ fleet: "192.168.18.1/24"
 interface: "by1"
 password: 1234567890123456
 listen-port: "8080"
+
+# IPs who can talk on the network
+# Array of key:value pairs. The key is another address on the VPN, the value is the real address:port.
+mates:
+  - "192.168.18.2": "192.168.2.61:8080"
