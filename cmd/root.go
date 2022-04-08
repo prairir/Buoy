@@ -145,7 +145,7 @@ func initConfig() {
 
 	mates := map[string]net.UDPAddr{}
 	for key, value := range config.Config.FleetMates {
-		addr, err := net.ResolveUDPAddr("udp", "192.168.2.61:8080")
+		addr, err := net.ResolveUDPAddr("udp", value)
 		if err != nil {
 			log.Fatal().
 				Str("address", value).
