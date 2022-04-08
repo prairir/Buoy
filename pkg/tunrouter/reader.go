@@ -12,22 +12,13 @@ import (
 	"github.com/songgao/water"
 )
 
-var FleetList map[string]net.UDPAddr = map[string]net.UDPAddr{
-	/*
-		"192.168.18.2": {
-			IP:   net.IP("192.168.2.58"),
-			Port: 8080,
-		},
-	*/
-}
+var FleetList map[string]net.UDPAddr = map[string]net.UDPAddr{}
 
 const (
 	maxIPPacketSize = 65535
 )
 
 func reader(inf *water.Interface, tun2EthQ chan ethrouter.Packet) error {
-	addr, _ := net.ResolveUDPAddr("udp", "192.168.2.58:8080")
-	FleetList["192.168.18.2"] = *addr
 	buf := make([]byte, maxIPPacketSize)
 	for {
 		n, err := inf.Read(buf)
