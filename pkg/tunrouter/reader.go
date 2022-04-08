@@ -32,8 +32,7 @@ func reader(inf *water.Interface, tun2EthQ chan ethrouter.Packet) error {
 		}
 
 		go func(buf []byte, n int) {
-			cop := make([]byte, n)
-			copy(cop, buf[:n])
+			cop := buf[:n]
 
 			// get the version xxxx0000 is the version in the first byte
 			version := cop[0] >> 4
