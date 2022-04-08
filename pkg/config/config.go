@@ -8,12 +8,13 @@ import (
 )
 
 type config struct {
-	Debug       bool   `mapstructure:"debug"`
-	LogCli      bool   `mapstructure:"log-cli"`
-	FleetStr    string `mapstructure:"fleet"`
-	PasswordStr string `mapstructure:"password"`
-	IName       string `mapstructure:"interface"`
-	ListenPort  string `mapstructure:"listen-port"`
+	Debug       bool              `mapstructure:"debug"`
+	LogCli      bool              `mapstructure:"log-cli"`
+	FleetStr    string            `mapstructure:"fleet"`
+	PasswordStr string            `mapstructure:"password"`
+	IName       string            `mapstructure:"interface"`
+	ListenPort  string            `mapstructure:"listen-port"`
+	FleetMates  map[string]string `mapstructure:"mates"`
 	Password    []byte
 	FleetAddr   net.IP
 	FleetNet    *net.IPNet
