@@ -29,8 +29,7 @@ func reader(conn *net.UDPConn, eth2TunQ chan []byte) error {
 		}
 
 		go func(buf []byte, n int) {
-			pack := make([]byte, n)
-			copy(pack, buf[:n])
+			pack := buf[:n]
 
 			pack, err = translate.Untranslate(pack, config.Config.Password)
 			// TODO: verify this behavior
