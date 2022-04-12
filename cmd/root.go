@@ -1,6 +1,7 @@
 package shanty
 
 import (
+	"errors"
 	"net"
 	"os"
 	"time"
@@ -135,6 +136,26 @@ func initConfig() {
 
 		log.Logger = log.Output(f)
 	}
+
+	if len(config.Config.FleetMates) < 1 {
+		log.Fatal().
+			Err(errors.New("Require at least 1 mate")).
+			Msg("no mates given")
+	}
+
+	mates := map[string]net.UDPAddr{}
+	for key, value := range config.Config.FleetMates {
+		addr, err := net.ResolveUDPAddr("udp", value)
+		if err != nil {
+			log.Fatal().
+				Str("address", value).
+				Err(err).
+				Msg("couldn't parse address")
+		}
+		mates[key] = *addr
+	}
+
+	tunrouter.FleetList = mates
 
 	log.Debug().Msgf("Using config file: %s", viper.ConfigFileUsed())
 
