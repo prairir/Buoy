@@ -24,8 +24,9 @@ func (b *Boat) Ping() {
 	data, err := json.Marshal(query)
 
 	if err != nil {
+		b.conn.Close()
 		panic(err)
 	}
 
-	fmt.Fprint(b.conn, data)
+	fmt.Fprint(b.conn, string(data))
 }
